@@ -11,25 +11,25 @@ ops = {
 }
 
 NUMBERS = [str(n) for n in list(range(0,10))]
-OPERANDS = ['+', '-', '*', '/']
+SYMBOLS = ['+', '-', '*', '/']
 PARENTHESES = ['(', ')']
 
 def split_expr(expression):
     splited_expr = re.split("([+-/*])", expression.replace(" ", ""))
     for i in range(len(splited_expr)):
-        if splited_expr[i] not in NUMBERS+OPERANDS+PARENTHESES:
-            raise ValueError(f"Invalid operand")
-        try:
-            splited_expr[i] = int(splited_expr[i])
-        except:
-            pass
+        if splited_expr[i] not in NUMBERS+SYMBOLS+PARENTHESES: raise ValueError(f"Invalid operand")
+        
+        # Convert string number into integer
+        try: splited_expr[i] = int(splited_expr[i])
+        except: pass
     
     return splited_expr
 
 def evaluate(expression, i):
     n1 = expression[i-1] # Get element before symbol
-    n2 = expression[i+1] # Get element after symbol    
-    res =  int(ops[expression[i]](n1,n2)) # Result of the operation
+    symbol = expression[i] # Get the operator
+    n2 = expression[i+1] # Get element after symbol
+    res = int(ops[symbol](n1,n2)) # Result of the operation
 
     # Replace expression by result of the operation
     expression[i] = res 
@@ -39,11 +39,12 @@ def evaluate(expression, i):
 
 def reduce(expression):
     # Calculate the expression, with priority order 
+    if expression.count('(') != expression.count(')'): raise SyntaxError("The brackets have never been opened or closed")
+
     expression = calc_parentheses(expression)
     splited_expr = split_expr(expression)
     final = calc_secondary( calc_priority(splited_expr) ) # Calculate priority first (*,/) then secondary (+,-)
-    result = ''.join([str(int) for int in final])
-    return result
+    return ''.join([str(int) for int in final])
 
 def calc_parentheses(expression):
     if '(' not in expression: return expression
@@ -53,7 +54,7 @@ def calc_parentheses(expression):
     after_expr = expression.find(')')+1
 
     if after_expr < len(expression): # Verify if end of the expression reached
-        if expression[after_expr] not in OPERANDS+[')']:
+        if expression[after_expr] not in SYMBOLS+[')']:
             raise SyntaxError("Only symbols should be put after a parenthesis")
 
     # Replace calculated parentheses by result
@@ -78,6 +79,4 @@ def calc_secondary(expression, i=0):
 
 def calc(expression):
     if len(expression) == 1: return expression[0]
-
-    # Calculate expression and return result
-    return reduce(expression)
+    else: return reduce(expression)
