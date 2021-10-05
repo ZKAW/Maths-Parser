@@ -1,8 +1,7 @@
 # Expression calculator
 
 import operator
-
-from . import handler as exc
+import re
 
 ops = {
     '+' : operator.add,
@@ -11,46 +10,38 @@ ops = {
     '/' : operator.truediv,
 }
 
+NUMBERS = [str(n) for n in list(range(0,10))]
+OPERANDS = ['+', '-', '*', '/']
+PARENTHESES = ['(', ')']
+
 def split_expr(expression):
-    SYMBOLS = ['+', '-', '*', '/', '(', ')']
-    splited_expr = []
-    pos = 0
-    while pos < len(expression):
-        char = expression[pos]
-
-        if char == ' ': pass # Ignore white spaces
-        elif char in SYMBOLS: # If char is a symbol
-            splited_expr.append(char)
-        elif char.isdigit(): # If char is a number
-            num = float(char)
-            while pos + 1 < len(expression) and expression[pos + 1].isdigit(): # Get entire number instead of single digit 
-                pos += 1
-                num = num * 10 + float(expression[pos]) # Extand number ten until entire number is present
-                # Ex: 125 = 1*10 -> +2 -> 12 -> 2*10 -> +5 -> 125
-            splited_expr.append(num)
-        else: # Unknown operand, raise error
-            return exc.raiseTypeError(command=expression, error=f"'{expression[pos]}' is not a valid operand")
-
-        pos += 1
+    splited_expr = re.split("([+-/*])", expression.replace(" ", ""))
+    for i in range(len(splited_expr)):
+        if splited_expr[i] not in NUMBERS+OPERANDS+PARENTHESES:
+            raise ValueError(f"Invalid operand")
+        try:
+            splited_expr[i] = int(splited_expr[i])
+        except:
+            pass
+    
     return splited_expr
 
 def evaluate(expression, i):
     n1 = expression[i-1] # Get element before symbol
-    n2 = expression[i+1] # Get element after symbol
+    n2 = expression[i+1] # Get element after symbol    
     res =  int(ops[expression[i]](n1,n2)) # Result of the operation
 
-    # Replace operation by result of the operation
+    # Replace expression by result of the operation
     expression[i] = res 
     expression.pop(i-1)
     expression.pop(i)
     return expression
 
 def reduce(expression):
-    # Calculate everything in the expression, and replace it by the result
+    # Calculate the expression, with priority order 
     expression = calc_parentheses(expression)
     splited_expr = split_expr(expression)
-    reduced_expr = calc_priority(splited_expr)
-    final = calc_secondary(reduced_expr)
+    final = calc_secondary( calc_priority(splited_expr) ) # Calculate priority first (*,/) then secondary (+,-)
     result = ''.join([str(int) for int in final])
     return result
 
@@ -58,7 +49,12 @@ def calc_parentheses(expression):
     if '(' not in expression: return expression
     
     # Get everything inside the deepest parentheses
-    center_expr = expression[ expression.rfind('(')+1 : expression.find(')') ] 
+    center_expr = expression[ expression.rfind('(')+1 : expression.find(')') ]
+    after_expr = expression.find(')')+1
+
+    if after_expr < len(expression): # Verify if end of the expression reached
+        if expression[after_expr] not in OPERANDS+[')']:
+            raise SyntaxError("Only symbols should be put after a parenthesis")
 
     # Replace calculated parentheses by result
     expression = expression.replace(f'({center_expr})', reduce(center_expr))
