@@ -1,4 +1,3 @@
-# Separate code in another local module to improve visibility
 from helpers import calculator
 
 def solve(expression):

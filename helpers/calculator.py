@@ -1,6 +1,6 @@
 # Expression calculator
 
-import operator
+import operator # Allow final calculation without multiple if condition
 import re
 
 ops = {
