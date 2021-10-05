@@ -70,9 +70,9 @@ def calc_priority(expression, i=0):
     return calc_priority(expression, i+1)
 
 def calc_secondary(expression, i=0):
-    if '+' not in expression: return expression
+    if '+' not in expression and '-' not in expression: return expression
 
-    if expression[i] == '+':
+    if expression[i] == '+' or expression[i] == '-':
         evaluate(expression, i)
         i = 0
     return calc_secondary(expression, i+1)
