@@ -21,7 +21,7 @@ def split_expr(expression):
 
     for i in range(len(splited_expr)):
         if splited_expr[i] not in NUMBERS+SYMBOLS+PARENTHESES: raise ValueError("Invalid character in expression")
-        
+
         # Convert string number into integer
         try: splited_expr[i] = int(splited_expr[i])
         except: pass
