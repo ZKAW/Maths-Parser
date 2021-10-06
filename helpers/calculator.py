@@ -16,8 +16,11 @@ PARENTHESES = ['(', ')']
 
 def split_expr(expression):
     splited_expr = re.split("([+-/*])", expression.replace(" ", ""))
+    if not any(x in expression for x in NUMBERS):
+        raise ValueError("The expression must contain at least one number")
+
     for i in range(len(splited_expr)):
-        if splited_expr[i] not in NUMBERS+SYMBOLS+PARENTHESES: raise ValueError(f"Invalid operand")
+        if splited_expr[i] not in NUMBERS+SYMBOLS+PARENTHESES: raise ValueError("Invalid character in expression")
         
         # Convert string number into integer
         try: splited_expr[i] = int(splited_expr[i])
@@ -78,5 +81,4 @@ def calc_secondary(expression, i=0):
     return calc_secondary(expression, i+1)
 
 def calc(expression):
-    if len(expression) == 1: return expression[0]
-    else: return reduce(expression)
+    return reduce(expression)
