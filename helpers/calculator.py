@@ -62,16 +62,21 @@ def calc_parentheses(expression):
     # Get everything inside the deepest parentheses
     center_expr = expression[ expression.rfind('(')+1 : expression.find(')') ]
     after_expr = expression.find(')')+1
+    before_expr = expression.rfind('(')-1
 
     if after_expr < len(expression): # Verify if end of the expression reached
         if expression[after_expr] not in SYMBOLS+[')']:
             raise SyntaxError("Only symbols should be put after a parenthesis")
+    
+    if before_expr != -1: # Verify if start of the expression reached
+        if expression[before_expr] not in SYMBOLS+['(']:
+            raise SyntaxError("Only symbols should be put before a parenthesis")
 
     # Replace calculated parentheses by result
     expression = expression.replace(f'({center_expr})', reduce(center_expr))
     return calc_parentheses(expression)
 
-def calc_priority(expression, i=0):
+def calc_priority(expression, i=0): # Calc * /
     if '*' not in expression and '/' not in expression: return expression
 
     if expression[i] == '*' or expression[i] == '/':
@@ -79,7 +84,7 @@ def calc_priority(expression, i=0):
         i = 0
     return calc_priority(expression, i+1)
 
-def calc_secondary(expression, i=0):
+def calc_secondary(expression, i=0): # Calc + -
     if '+' not in expression and '-' not in expression: return expression
 
     if expression[i] == '+' or expression[i] == '-':
