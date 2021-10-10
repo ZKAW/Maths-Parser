@@ -22,11 +22,15 @@ def split_expr(expression):
     if not any(x in expression for x in NUMBERS):
         raise ValueError("The expression must contain at least one number")
             
-    for i in range(len(splited_expr)):
+    for i in range(len(splited_expr)): # Check if every character are correct
         if splited_expr[i] not in SYMBOLS+PARENTHESES: # If character is not a symbol
-            try: splited_expr[i] = int(splited_expr[i])
-            except: raise ValueError(f"Invalid character in expression: '{splited_expr[i]}'") # If character is not a number
+            try: int(splited_expr[i]) # If character is not a number
+            except: raise ValueError(f"Invalid character in expression: '{splited_expr[i]}'")
 
+        # Convert string number into integer
+        try: splited_expr[i] = int(splited_expr[i])
+        except: pass
+    
     return splited_expr
 
 def evaluate(expression, i):
@@ -46,8 +50,9 @@ def reduce(expression):
     if expression.count('(') != expression.count(')'): raise SyntaxError("The brackets have never been opened or closed")
 
     expression = calc_parentheses(expression)
-    res = calc_by_priority(split_expr(expression), priority=1) # Calculate priority first (*,/) then secondary (+,-)
-    return ''.join([str(int) for int in res])
+    splited_expr = split_expr(expression)
+    final = calc_secondary( calc_priority(splited_expr) ) # Calculate priority first (*,/) then secondary (+,-)
+    return ''.join([str(int) for int in final])
 
 def calc_parentheses(expression):
     if '(' not in expression: return expression
@@ -69,14 +74,21 @@ def calc_parentheses(expression):
     expression = expression.replace(f'({center_expr})', reduce(center_expr))
     return calc_parentheses(expression)
 
-def calc_by_priority(expression, i=0, priority=1): # Calc * /
-    if '*' not in expression and '/' not in expression and priority==1: return calc_by_priority(expression, i=0, priority=2)
-    elif '+' not in expression and '-' not in expression and priority==2: return expression
-    elif expression[i] in SYMBOLS:
+def calc_priority(expression, i=0): # Calc * /
+    if '*' not in expression and '/' not in expression: return expression
+
+    if expression[i] == '*' or expression[i] == '/':
         evaluate(expression, i)
         i = 0
+    return calc_priority(expression, i+1)
 
-    return calc_by_priority(expression, i+1, priority=priority)
+def calc_secondary(expression, i=0): # Calc + -
+    if '+' not in expression and '-' not in expression: return expression
+
+    if expression[i] == '+' or expression[i] == '-':
+        evaluate(expression, i)
+        i = 0
+    return calc_secondary(expression, i+1)
 
 def calc(expression):
     return reduce(expression)
