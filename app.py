@@ -1,7 +1,16 @@
+import eel
 from helpers import calculator
 
-def solve(expression):
-    return calculator.calc(expression)
+eel.init('web')
 
-expression = input('Enter an expression to calculate: ')
-print(f"{expression} = {solve(expression)}")
+@eel.expose()
+def solve(expression):
+    try:
+        return calculator.calc(expression)
+    except Exception as ex:
+        return(f'error={ex}')
+
+eel.start('index.html', block=False)
+
+while True:
+    eel.sleep(10)
