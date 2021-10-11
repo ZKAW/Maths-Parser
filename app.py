@@ -6,7 +6,9 @@ eel.init('web')
 @eel.expose()
 def solve(expression):
     try:
-        return calculator.calc(expression)
+        res = calculator.calc(expression)
+        print(f"{expression} = {res}")
+        return res
     except Exception as ex:
         return(f'error={ex}')
 

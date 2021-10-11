@@ -10,30 +10,34 @@ ops = {
     '/' : operator.truediv,
 }
 
+# TODO: float result instead of int // rebuild calc_parentheses to use list instead of str
+
 NUMBERS = [str(n) for n in list(range(0,10))]
 SYMBOLS = ['+', '-', '*', '/']
 PARENTHESES = ['(', ')']
 
 def split_expr(expression):
-    splited_expr = re.split("([+-/*])", expression.replace(" ", "")) # Match mathematical regular expression
-    if '' in splited_expr:
-        raise SyntaxError("Syntaxe invalide au niveau des opérateurs. La syntaxe suivante est attendue: 'n1' 'opérateur' 'n2'")
+    maths_reg = re.compile('(\d+|[^ 0-9])')
+    splited_expr = re.findall(maths_reg, expression)
 
     if not any(x in expression for x in NUMBERS):
         raise ValueError("L'expression doit contenir au minimum un chiffre")
             
     for i in range(len(splited_expr)):
         if splited_expr[i] not in SYMBOLS+PARENTHESES: # If character is not a symbol
-            try: splited_expr[i] = float(splited_expr[i])
-            except: raise ValueError(f"Donnée invalide dans l'expression: '{splited_expr[i]}'") # If character is not a number
+            try: splited_expr[i] = int(splited_expr[i])
+            except: raise ValueError(f"Donnée invalide dans l'expression: '{splited_expr[i]}' pos: {i}") # If character is not a number
 
     return splited_expr
 
 def evaluate(expression, i):
-    n1 = expression[i-1] # Get element before symbol
-    symbol = expression[i] # Get the operator
-    n2 = expression[i+1] # Get element after symbol
-    res = float(ops[symbol](n1,n2)) # Result of the operation
+    try:
+        n1 = expression[i-1] # Get element before symbol
+        symbol = expression[i] # Get the operator
+        n2 = expression[i+1] # Get element after symbol
+    except IndexError:
+        raise SyntaxError("Syntaxte invalide au niveau des opérateurs, syntaxe attendue: 'n1' 'opérateur' 'n2'")
+    res = int(ops[symbol](n1,n2)) # Result of the operation
 
     # Replace expression by result of the operation
     expression[i] = res 
@@ -47,7 +51,8 @@ def calc(expression): # Calculate the mathematical expression, with priority ord
     
     expression = calc_parentheses(expression) # Calculate every parentheses first
     res = calc_by_priority(split_expr(expression)) # Calculate * / first then + -
-    return ''.join([str(float) for float in res])
+    res = ''.join([str(int) for int in res])
+    return res
 
 def calc_parentheses(expression): 
     if '(' not in expression: return expression
@@ -57,11 +62,11 @@ def calc_parentheses(expression):
     after_expr = expression.find(')')+1
     before_expr = expression.rfind('(')-1
 
-    if after_expr < len(expression): # Verify if end of the expression reached
+    if after_expr < len(expression):
         if expression[after_expr] not in SYMBOLS+[')']:
             raise SyntaxError("Seul les symboles sont acceptés après une parenthèse fermée")
     
-    if before_expr != -1: # Verify if start of the expression reached
+    if before_expr != -1:
         if expression[before_expr] not in SYMBOLS+['(']:
             raise SyntaxError("Seul les symboles sont acceptés avant une parenthèse ouverte")
 
