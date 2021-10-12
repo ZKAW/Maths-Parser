@@ -8,20 +8,28 @@
 </head>
 
 <body>
+    <div class="form-group noselect">
+        <div class="text-container">
+            <div class="infoLabel"></div>
+        </div>
+    </div>
 
     <div class="form-group noselect">
         <span>Expression</span>
-        <input class="expressionField">
+        <input class="form-field expressionField">
+    </div>
+
+    <div class="form-group" id="result" style="display: none;">
+        <span class="noselect">=</span>
+        <div class="text-container">
+            <label class="form-field resultLabel"></label>
+        </div>
+
+
     </div>
 
     <div class="form-group noselect">
         <div class="submitBtn">Calculer</div>
-    </div>
-
-    <div class="form-group noselect">
-        <div class="text-container">
-            <div class="resultLabel"></div>
-        </div>
     </div>
 
     <script src="eel.js"></script>

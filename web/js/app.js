@@ -1,6 +1,8 @@
-var btn_submit = document.querySelector('.submitBtn');
-var label_result = document.querySelector('.resultLabel')
 var input_expression = document.querySelector(".expressionField")
+var label_info = document.querySelector('.infoLabel')
+var label_result = document.querySelector('.resultLabel')
+var container_result = document.querySelector('#result')
+var btn_submit = document.querySelector('.submitBtn');
 
 btn_submit.onclick = function() { sendData() } // Handle btn press event
 
@@ -13,28 +15,30 @@ document.addEventListener("keyup", function(event) { // Handle enter btn click e
 function getData(res) {
     if (res.includes('error=')) {
         res = res.replace('error=', '')
-        label_result.innerHTML = res;
         console.log(`error: ${res}`)
-        return false;
+        label_info.innerHTML = res
+        return false
         
     } else {
-        label_result.innerHTML = `Résultat: ${res}`;
+        label_result.innerHTML = res
+        label_info.innerHTML = ''
+        container_result.style.display = ''
         console.log(`result: ${res}`)
-        return res
     }
+    return res
 }
 
 function sendData() { // Send input data to python
-    var expression = input_expression.value;
+    var expression = input_expression.value
     console.log(`expression: ${expression}`)
 
     if (expression == null || expression == "") {
-        label_result.innerHTML = 'Veuillez remplir tous les champs.';
-        return false;
+        label_info.innerHTML = 'Veuillez remplir tous les champs.';
+        return false
         
     } else {
-        eel.solve(expression)(getData);
-        return true;
+        eel.solve(expression)(getData)
+        return true
     }
 
 }

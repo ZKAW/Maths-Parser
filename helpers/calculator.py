@@ -40,10 +40,10 @@ def evaluate(expression, i):
         n1 = expression[i-1] 
         symbol = expression[i] 
         n2 = expression[i+1] 
-    except IndexError:
+        res = float(ops[symbol](n1,n2)) # Calc expression 
+    except (IndexError, TypeError):
         raise SyntaxError("Syntaxte invalide au niveau des opérateurs, syntaxe attendue: 'n1' 'opérateur' 'n2'")
 
-    res = float(ops[symbol](n1,n2)) # Calc expression 
     # Replace expression by the result of the operationz
     expression[i] = res 
     expression.pop(i-1)
@@ -53,7 +53,9 @@ def evaluate(expression, i):
 def calc(expression): # Calculate the mathematical expression, with priority order
     if expression.count('(') != expression.count(')'): 
         raise SyntaxError("Les parenthèses n'ont pas été ouvertes ou fermées correctement")
-    
+    elif expression[0] in SYMBOLS:
+        raise SyntaxError("L'expression ne peut pas commencer avec un symbole")
+
     splited_expr = tokenize(expression) # Split expression in multiple tokens
     splited_expr = calc_parentheses(splited_expr) # Calculate every parentheses
     res = calc_by_priority(splited_expr) # Calculate * / first, then + -

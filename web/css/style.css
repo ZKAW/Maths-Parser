@@ -46,6 +46,7 @@ body .form-group:not(:last-child) {
   --submitBtn-background: #4CAF50;
   --submitBtn-background-hover: #3c8f3f;
   --submitBtn-background-active: #5b98b1;
+  --infoLabel-color: #5b98b1;
   --resultLabel-color: #417083;
 }
 
@@ -53,7 +54,7 @@ body .form-group:not(:last-child) {
 .nodisplay { visibility: hidden; }
 
 /* form container */
-.expressionField {
+.form-field {
   display: block;
   width: 100%;
   padding: 8px 16px;
@@ -63,15 +64,14 @@ body .form-group:not(:last-child) {
   font-family: inherit;
   border-radius: 6px;
   -webkit-appearance: none;
-  color: var(--input-color);
   border: 1px solid var(--input-border);
   background: var(--input-background);
   transition: border 0.3s ease;
 }
-.expressionField::-moz-placeholder { color: var(--input-placeholder); }
-.expressionField:-ms-input-placeholder { color: var(--input-placeholder); }
-.expressionField::placeholder { color: var(--input-placeholder); }
-.expressionField:focus {
+.form-field::-moz-placeholder { color: var(--input-placeholder); }
+.form-field:-ms-input-placeholder { color: var(--input-placeholder); }
+.form-field::placeholder { color: var(--input-placeholder); }
+.form-field:focus {
   outline: none;
   border-color: var(--input-border-focus);
 }
@@ -82,27 +82,27 @@ body .form-group:not(:last-child) {
   width: 100%;
 }
 .form-group > span,
-.form-group .expressionField {
+.form-group .form-field {
   white-space: nowrap;
   display: block;
 }
 .form-group > span:not(:first-child):not(:last-child),
-.form-group .expressionField:not(:first-child):not(:last-child) {
+.form-group .form-field:not(:first-child):not(:last-child) {
   border-radius: 0;
 }
 .form-group > span:first-child,
-.form-group .expressionField:first-child {
+.form-group .form-field:first-child {
   border-radius: 6px 0 0 6px;
 }
 .form-group > span:last-child,
-.form-group .expressionField:last-child {
+.form-group .form-field:last-child {
   border-radius: 0 6px 6px 0;
 }
 .form-group > span:not(:first-child),
-.form-group .expressionField:not(:first-child) {
+.form-group .form-field:not(:first-child) {
   margin-left: -1px;
 }
-.form-group .expressionField {
+.form-group .form-field {
   position: relative;
   z-index: 1;
   flex: 1 1 auto;
@@ -159,9 +159,19 @@ body .form-group:not(:last-child) {
   text-align: center;
 }
 
+.infoLabel {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--infoLabel-color);
+} 
+
 .resultLabel {
   font-family: 'Poppins', sans-serif;
   font-weight: 400;
   font-size: 18px;
   color: var(--resultLabel-color);
+  cursor: text;
 }
+
+.expressionField { color: var(--input-color); }
