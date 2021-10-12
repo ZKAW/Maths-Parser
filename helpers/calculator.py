@@ -41,16 +41,15 @@ def evaluate(expression, i):
         n2 = expression[i+1] 
     except IndexError:
         raise SyntaxError("Syntaxte invalide au niveau des opérateurs, syntaxe attendue: 'n1' 'opérateur' 'n2'")
-    res = float(ops[symbol](n1,n2)) 
 
-    # Replace expression by result of the operationz
+    res = float(ops[symbol](n1,n2)) # Calc expression 
+    # Replace expression by the result of the operationz
     expression[i] = res 
     expression.pop(i-1)
     expression.pop(i)
     return expression
 
 def calc(expression): # Calculate the mathematical expression, with priority order
-    print(expression)
     if expression.count('(') != expression.count(')'): 
         raise SyntaxError("Les parenthèses n'ont pas été ouvertes ou fermées correctement")
     
@@ -61,17 +60,19 @@ def calc(expression): # Calculate the mathematical expression, with priority ord
 
 def calc_parentheses(expression): 
     if '(' not in expression: return expression
-    
+
     # Get everything inside the deepest parentheses
     left_par = dict(map(reversed, enumerate(expression)))["("]
-    right_par = expression.index(')')
+    right_par = left_par+1
+    while expression[right_par] != ')': right_par += 1
     center_expr = expression[ left_par+1 : right_par]
 
-    if right_par+1 < len(expression): # Verify if end of the expression reached
+    # Check parentheses syntax
+    if right_par+1 < len(expression): 
         if expression[right_par+1] not in SYMBOLS+[')']:
             raise SyntaxError("Seul les symboles sont acceptés après une parenthèse fermée")
     
-    if left_par-1 != -1: # Verify if start of the expression reached
+    if left_par-1 != -1: 
         if expression[left_par-1] not in SYMBOLS+['(']:
              raise SyntaxError("Seul les symboles sont acceptés avant une parenthèse ouverte")
 
