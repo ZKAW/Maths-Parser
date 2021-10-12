@@ -1,6 +1,6 @@
 # Expression calculator
 
-import operator # Allow final calculation without multiple "if" condition
+import operator # Allow final calculation without multiple "if" statments
 import re
 
 ops = {
@@ -10,67 +10,74 @@ ops = {
     '/' : operator.truediv,
 }
 
-# TODO: float result instead of int // rebuild calc_parentheses to use list instead of str
-
 NUMBERS = [str(n) for n in list(range(0,10))]
-SYMBOLS = ['+', '-', '*', '/']
+SYMBOLS = ['+', '-', '*', '/', '.']
 PARENTHESES = ['(', ')']
 
-def split_expr(expression):
-    maths_reg = re.compile('(\d+|[^ 0-9])')
-    splited_expr = re.findall(maths_reg, expression)
-
+def tokenize(expression):
+    if type(expression) == list: return expression
+    # Check if every character in expression is allowed
     if not any(x in expression for x in NUMBERS):
-        raise ValueError("L'expression doit contenir au minimum un chiffre")
-            
+        raise ValueError("L'expression doit contenir au moins un chiffre")
+
+    for i in expression:
+        if i not in SYMBOLS+PARENTHESES+NUMBERS:
+            raise ValueError(f"Donnée invalide dans l'expression: '{i}'")
+
+    # Use regex to tokenize the expression (ex: 12*(4+2) -> ['12','*','(','4','+','2',')'])
+    splited_expr = re.split('([()+/*-])', expression)
+    while '' in splited_expr: splited_expr.remove('')
+
     for i in range(len(splited_expr)):
-        if splited_expr[i] not in SYMBOLS+PARENTHESES: # If character is not a symbol
-            try: splited_expr[i] = int(splited_expr[i])
-            except: raise ValueError(f"Donnée invalide dans l'expression: '{splited_expr[i]}' pos: {i}") # If character is not a number
+        try: splited_expr[i] = float(splited_expr[i])
+        except: pass
 
     return splited_expr
 
 def evaluate(expression, i):
     try:
-        n1 = expression[i-1] # Get element before symbol
-        symbol = expression[i] # Get the operator
-        n2 = expression[i+1] # Get element after symbol
+        n1 = expression[i-1] 
+        symbol = expression[i] 
+        n2 = expression[i+1] 
     except IndexError:
         raise SyntaxError("Syntaxte invalide au niveau des opérateurs, syntaxe attendue: 'n1' 'opérateur' 'n2'")
-    res = int(ops[symbol](n1,n2)) # Result of the operation
+    res = float(ops[symbol](n1,n2)) 
 
-    # Replace expression by result of the operation
+    # Replace expression by result of the operationz
     expression[i] = res 
     expression.pop(i-1)
     expression.pop(i)
     return expression
 
-def calc(expression): # Calculate the mathematical expression, with priority order 
+def calc(expression): # Calculate the mathematical expression, with priority order
+    print(expression)
     if expression.count('(') != expression.count(')'): 
         raise SyntaxError("Les parenthèses n'ont pas été ouvertes ou fermées correctement")
     
-    expression = calc_parentheses(expression) # Calculate every parentheses first
-    res = calc_by_priority(split_expr(expression)) # Calculate * / first then + -
-    res = ''.join([str(int) for int in res])
-    return res
+    splited_expr = tokenize(expression) # Split expression in multiple tokens
+    splited_expr = calc_parentheses(splited_expr) # Calculate every parentheses
+    res = calc_by_priority(splited_expr) # Calculate * / first, then + -
+    return ''.join([str(float) for float in res])
 
 def calc_parentheses(expression): 
     if '(' not in expression: return expression
     
     # Get everything inside the deepest parentheses
-    center_expr = expression[ expression.rfind('(')+1 : expression.find(')') ]
-    after_expr = expression.find(')')+1
-    before_expr = expression.rfind('(')-1
+    left_par = dict(map(reversed, enumerate(expression)))["("]
+    right_par = expression.index(')')
+    center_expr = expression[ left_par+1 : right_par]
 
-    if after_expr < len(expression):
-        if expression[after_expr] not in SYMBOLS+[')']:
+    if right_par+1 < len(expression): # Verify if end of the expression reached
+        if expression[right_par+1] not in SYMBOLS+[')']:
             raise SyntaxError("Seul les symboles sont acceptés après une parenthèse fermée")
     
-    if before_expr != -1:
-        if expression[before_expr] not in SYMBOLS+['(']:
-            raise SyntaxError("Seul les symboles sont acceptés avant une parenthèse ouverte")
+    if left_par-1 != -1: # Verify if start of the expression reached
+        if expression[left_par-1] not in SYMBOLS+['(']:
+             raise SyntaxError("Seul les symboles sont acceptés avant une parenthèse ouverte")
 
-    expression = expression.replace(f'({center_expr})', calc(center_expr))
+    for i in range(len(center_expr) + 2): expression.pop(left_par) # Remove calcul from the expression 
+    expression.insert(left_par, float(calc(center_expr))) # Insert result into the expression (instead of the previous calcul)
+
     return calc_parentheses(expression)
 
 def calc_by_priority(expression, i=0, priority=1):
