@@ -17,6 +17,7 @@ PARENTHESES = ['(', ')']
 def tokenize(expression):
     if type(expression) == list: return expression
     # Check if every character in expression is allowed
+    expression = expression.replace(' ','')
     if not any(x in expression for x in NUMBERS):
         raise ValueError("L'expression doit contenir au moins un chiffre")
 
