@@ -3,8 +3,10 @@ var label_info = document.querySelector('.infoLabel')
 var label_result = document.querySelector('.resultLabel')
 var container_result = document.querySelector('#result')
 var btn_submit = document.querySelector('.submitBtn');
+var btn_reset = document.querySelector('.resetBtn');
 
 btn_submit.onclick = function() { sendData() } // Handle btn press event
+btn_reset.onclick = function() { resetForm(resetInfo=true) } // Handle btn press event
 
 document.addEventListener("keyup", function(event) { // Handle enter btn click event
     if (event.key === "Enter") { 
@@ -17,6 +19,7 @@ function getData(res) {
         res = res.replace('error=', '')
         console.log(`error: ${res}`)
         label_info.innerHTML = res
+        label_result.innerHTML = ''
         return false
         
     } else {
@@ -34,13 +37,21 @@ function sendData() { // Send input data to python
 
     if (expression == null || expression == "") {
         label_info.innerHTML = 'Veuillez remplir tous les champs.';
+        resetForm()
         return false
         
     } else {
         eel.solve(expression)(getData)
         return true
     }
+}
 
+function resetForm(resetInfo=false) {
+    container_result.style.display = 'none'
+    if (resetInfo) {label_info.innerHTML = ''}
+    input_expression.value = ''
+    label_result.innerHTML = ''
+    input_expression.focus()
 }
 
 input_expression.focus()
