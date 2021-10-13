@@ -79,7 +79,7 @@ def calc_parentheses(expression):
     
     if left_par-1 != -1: 
         if expression[left_par-1] not in SYMBOLS+['(']:
-             raise SyntaxError("Seul les symboles sont acceptés avant une parenthèse ouverte")
+             raise SyntaxError("Seul les nombres sont acceptés avant une parenthèse ouverte")
 
     for i in range(len(center_expr) + 2): expression.pop(left_par) # Remove calcul from the expression 
     expression.insert(left_par, float(calc(center_expr))) # Insert result into the expression (instead of the previous calcul)
