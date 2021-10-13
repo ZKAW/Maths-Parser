@@ -17,11 +17,12 @@ document.addEventListener("keyup", function(event) { // Handle enter btn click e
 function getData(res) {
     if (res.includes('error=')) {
         res = res.replace('error=', '')
-        console.log(`error: ${res}`)
         label_info.innerHTML = res
         label_result.innerHTML = ''
+        container_result.style.display = 'none'
+        console.log(`error: ${res}`)
         return false
-        
+
     } else {
         label_result.innerHTML = res
         label_info.innerHTML = ''
@@ -34,21 +35,14 @@ function getData(res) {
 function sendData() { // Send input data to python
     var expression = input_expression.value
     console.log(`expression: ${expression}`)
-
-    if (expression == null || expression == "") {
-        label_info.innerHTML = 'Veuillez remplir tous les champs.';
-        resetForm()
-        return false
-        
-    } else {
-        eel.solve(expression)(getData)
-        return true
-    }
+    eel.solve(expression)(getData)
+    return true
+    
 }
 
-function resetForm(resetInfo=false) {
+function resetForm() {
     container_result.style.display = 'none'
-    if (resetInfo) {label_info.innerHTML = ''}
+    label_info.innerHTML = ''
     input_expression.value = ''
     label_result.innerHTML = ''
     input_expression.focus()

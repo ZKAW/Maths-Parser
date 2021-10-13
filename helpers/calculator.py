@@ -51,7 +51,9 @@ def evaluate(expression, i):
     return expression
 
 def calc(expression): # Calculate the mathematical expression, with priority order
-    if expression.count('(') != expression.count(')'): 
+    if len(expression) < 1:
+        raise TypeError("L'expression ne peut pas être vide")
+    elif expression.count('(') != expression.count(')'): 
         raise SyntaxError("Les parenthèses n'ont pas été ouvertes ou fermées correctement")
     elif expression[0] in SYMBOLS:
         raise SyntaxError("L'expression ne peut pas commencer avec un symbole")
