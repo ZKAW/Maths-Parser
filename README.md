@@ -9,6 +9,9 @@ The priority order of multiplications, divisions, and brackets is respect
 ``` bash
 git clone https://github.com/ZKAW/Maths-Parser
 ```
+``` bash
+pip3 install -r requirements.txt
+```
 
 ### How to use
 ``` bash
