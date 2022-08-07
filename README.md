@@ -1,9 +1,9 @@
 # Maths-Parser 
 
 ### Info
-Python mathematical expression parser with error raise.
-This parser does not use "eval" native Python function.
-The priority order of multiplications, divisions, and brackets is respect
+Python mathematical expression parser with error raise and GUI.
+* This parser does not use "eval" native Python function.
+* The priority order of multiplications, divisions, and brackets is respected
 
 ### How to install
 ``` bash
