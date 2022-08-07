@@ -19,11 +19,11 @@ def tokenize(expression):
     # Check if every character in expression is allowed
     expression = expression.replace(' ','')
     if not any(x in expression for x in NUMBERS):
-        raise ValueError("L'expression doit contenir au moins un chiffre")
+        raise ValueError("The expression must contain at least one number")
 
     for i in expression:
         if i not in SYMBOLS+PARENTHESES+NUMBERS:
-            raise ValueError(f"Donnée invalide dans l'expression: '{i}'")
+            raise ValueError(f"Invalid token in expression: '{i}'")
 
     # Use regex to tokenize the expression (ex: 12*(4+2) -> ['12','*','(','4','+','2',')'])
     splited_expr = re.split('([()+/*-])', expression)
@@ -42,7 +42,7 @@ def evaluate(expression, i):
         n2 = expression[i+1] 
         res = float(ops[symbol](n1,n2)) # Calc expression 
     except (IndexError, TypeError):
-        raise SyntaxError("Syntaxte invalide au niveau des opérateurs, syntaxe attendue: 'n1' 'opérateur' 'n2'")
+        return SyntaxError("Syntax error with operators, expected syntax: 'n1' 'operator' 'n2'")
 
     # Replace expression by the result of the operationz
     expression[i] = res 
@@ -52,11 +52,11 @@ def evaluate(expression, i):
 
 def calc(expression): # Calculate the mathematical expression, with priority order
     if len(expression) < 1:
-        raise TypeError("L'expression ne peut pas être vide")
+        raise TypeError("The expression must contain at least one number")
     elif expression.count('(') != expression.count(')'): 
-        raise SyntaxError("Les parenthèses n'ont pas été ouvertes ou fermées correctement")
+        raise SyntaxError("The parentheses are not opened or closed correctly")
     elif expression[0] in SYMBOLS:
-        raise SyntaxError("L'expression ne peut pas commencer avec un symbole")
+        raise SyntaxError("The expression cannot start with a symbol")
 
     splited_expr = tokenize(expression) # Split expression in multiple tokens
     splited_expr = calc_parentheses(splited_expr) # Calculate every parentheses
@@ -75,11 +75,11 @@ def calc_parentheses(expression):
     # Check parentheses syntax
     if right_par+1 < len(expression): 
         if expression[right_par+1] not in SYMBOLS+[')']:
-            raise SyntaxError("Seul les symboles sont acceptés après une parenthèse fermée")
+            raise SyntaxError("Only symbols are accepted after a closed parentheses")
     
     if left_par-1 != -1: 
         if expression[left_par-1] not in SYMBOLS+['(']:
-             raise SyntaxError("Seul les nombres sont acceptés avant une parenthèse ouverte")
+            raise SyntaxError("Only numbers are accepted before a open parentheses")
 
     for i in range(len(center_expr) + 2): expression.pop(left_par) # Remove calcul from the expression 
     expression.insert(left_par, float(calc(center_expr))) # Insert result into the expression (instead of the previous calcul)
